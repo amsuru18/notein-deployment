@@ -25,8 +25,7 @@ app.use(
     origin: [
       "http://localhost:5173",
       "http://127.0.0.1:5173",
-      "https://your-frontend-domain.vercel.app", // Replace with your actual frontend domain
-      "https://notein-app.vercel.app", // Example domain
+      "https://notein-frontend.vercel.app",
     ],
     credentials: true,
   })
