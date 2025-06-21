@@ -14,7 +14,7 @@ const SearchBar = ({ value, onChange, handleSearch, onClearSearch }) => {
         <input
           type="text"
           placeholder="Search notes..."
-          className="w-full bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-600 rounded-lg pl-10 pr-10 py-2.5 text-sm text-gray-900 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+          className="w-full bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-600 rounded-lg pl-10 pr-10 py-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
           value={value}
           onChange={onChange}
           onKeyPress={handleKeyPress}
