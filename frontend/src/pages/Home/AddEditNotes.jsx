@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import TagInput from "../../components/Input/TagInput ";
+import TagInput from "../../components/Input/TagInput";
 import { MdClose } from "react-icons/md";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
