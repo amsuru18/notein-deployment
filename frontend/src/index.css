@@ -1,0 +1,92 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: "Inter", sans-serif;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-gray-50 dark:bg-dark900 transition-colors duration-300;
+    overflow-x: hidden;
+  }
+
+  * {
+    @apply transition-colors duration-200;
+  }
+}
+
+@layer components {
+  .input-box {
+    @apply w-full text-sm bg-white dark:bg-dark800 border border-gray-200 dark:border-dark600 px-4 py-3 rounded-lg mb-4 outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:text-white dark:placeholder-gray-400;
+  }
+
+  .btn-primary {
+    @apply w-full text-sm bg-primary-600 hover:bg-primary-700 text-white font-medium py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl;
+  }
+
+  .btn-secondary {
+    @apply w-full text-sm bg-gray-100 dark:bg-dark700 hover:bg-gray-200 dark:hover:bg-dark600 text-gray-700 dark:text-gray-200 font-medium py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98];
+  }
+
+  .icon-btn {
+    @apply text-xl text-gray-400 dark:text-gray-500 cursor-pointer hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200;
+  }
+
+  .input-label {
+    @apply text-xs text-gray-500 dark:text-gray-400 font-medium mb-1 block;
+  }
+
+  .card {
+    @apply bg-white dark:bg-dark800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-dark700;
+  }
+
+  .glass-effect {
+    @apply backdrop-blur-md bg-white/80 dark:bg-dark800/80 border border-white/20 dark:border-dark600/20;
+  }
+
+  .gradient-bg {
+    @apply bg-gradient-to-br from-primary-50 to-blue-50 dark:from-dark800 dark:to-dark900;
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary-600 to-blue-600 bg-clip-text text-transparent;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-dark800;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-dark600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400 dark:bg-dark500;
+}
+
+/* Loading animation */
+.loading-dots {
+  @apply inline-flex space-x-1;
+}
+
+.loading-dots > div {
+  @apply w-2 h-2 bg-primary-600 rounded-full animate-bounce;
+}
+
+.loading-dots > div:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.loading-dots > div:nth-child(3) {
+  animation-delay: 0.2s;
+}
