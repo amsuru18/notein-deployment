@@ -51,15 +51,12 @@ const Navbar = ({ onSearchNote, handleClearSearch }) => {
       <h2 className="text-xl font-medium text-black py-2">NoteIn</h2>
       {currentUser && (
         <>
-          <div className="w-80 h-16 relative">
-            {" "}
-            <SearchBar
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              handleSearch={handleSearch}
-              onClearSearch={onClearSearch}
-            />
-          </div>
+          <SearchBar
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            handleSearch={handleSearch}
+            onClearSearch={onClearSearch}
+          />
 
           <ProfileInfo onLogout={handleSignout} />
         </>
