@@ -1,261 +1,183 @@
 import React, { useEffect, useState } from "react";
-import NoteCard from "../../components/Cards/NoteCard";
-import { FiPlus } from "react-icons/fi";
-import Modal from "react-modal";
-import AddEditNotes from "./AddEditNotes";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/Navbar";
+import NoteCard from "../../components/Cards/NoteCard";
+import { MdAdd } from "react-icons/md";
+import AddEditNotes from "./AddEditNotes";
+import Modal from "react-modal";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
 import EmptyCard from "../../components/EmptyCard/EmptyCard";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+import { ToastContainer, toast } from "react-toastify";
 
 const Home = () => {
-  const { currentUser, loading, errorDispatch } = useSelector(
-    (state) => state.user
-  );
-
-  const [userInfo, setUserInfo] = useState(null);
-  const [allNotes, setAllNotes] = useState([]);
-  const [isSearch, setIsSearch] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const navigate = useNavigate();
-
   const [openAddEditModal, setOpenAddEditModal] = useState({
     isShown: false,
     type: "add",
     data: null,
   });
 
-  useEffect(() => {
-    if (currentUser === null || !currentUser) {
-      navigate("/login");
-    } else {
-      setUserInfo(currentUser?.rest);
-      getAllNotes();
-    }
-  }, []);
+  const [allNotes, setAllNotes] = useState([]);
+  const [userInfo, setUserInfo] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  // get all notes
-  const getAllNotes = async () => {
-    try {
-      setIsLoading(true);
-      const res = await axios.get(`${API_BASE_URL}/note/all`, {
-        withCredentials: true,
-      });
+  const [isSearch, setIsSearch] = useState(false);
 
-      if (res.data.success === false) {
-        console.log(res.data);
-        return;
-      }
-
-      setAllNotes(res.data.notes);
-    } catch (error) {
-      console.log(error);
-      toast.error("Failed to load notes");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const navigate = useNavigate();
+  const { currentUser } = useSelector((state) => state.user);
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   const handleEdit = (noteDetails) => {
     setOpenAddEditModal({ isShown: true, data: noteDetails, type: "edit" });
   };
 
-  // Delete Note
-  const deleteNote = async (data) => {
-    const noteId = data._id;
-
+  const getallNotes = async () => {
     try {
+      setLoading(true);
+      const res = await axios.get(`${API_BASE_URL}/note/all`, {
+        withCredentials: true,
+      });
+      setLoading(false);
+
+      if (res.data && res.data.notes) {
+        setAllNotes(res.data.notes);
+      }
+    } catch (error) {
+      setLoading(false);
+      if (error.response.status === 401) {
+        localStorage.clear();
+        navigate("/login");
+      }
+      console.log("An unexpected error occurred. Please try again");
+    }
+  };
+
+  const deleteNote = async (noteId) => {
+    try {
+      setLoading(true);
       const res = await axios.delete(`${API_BASE_URL}/note/delete/` + noteId, {
         withCredentials: true,
       });
+      setLoading(false);
 
-      if (res.data.success === false) {
-        toast.error(res.data.message);
-        return;
+      if (res.data && !res.data.error) {
+        toast.success(res.data.message);
+        getallNotes();
       }
-
-      toast.success(res.data.message);
-      getAllNotes();
     } catch (error) {
-      toast.error(error.message);
+      setLoading(false);
+      console.log(error);
     }
   };
 
   const onSearchNote = async (query) => {
     try {
+      setLoading(true);
       const res = await axios.get(`${API_BASE_URL}/note/search`, {
         params: { query },
         withCredentials: true,
       });
-
-      if (res.data.success === false) {
-        console.log(res.data.message);
-        toast.error(res.data.message);
-        return;
+      setLoading(false);
+      if (res.data && res.data.notes) {
+        setIsSearch(true);
+        setAllNotes(res.data.notes);
       }
-
-      setIsSearch(true);
-      setAllNotes(res.data.notes);
     } catch (error) {
-      toast.error(error.message);
+      setLoading(false);
+      console.log(error);
     }
   };
 
   const handleClearSearch = () => {
     setIsSearch(false);
-    getAllNotes();
+    getallNotes();
   };
 
-  const updateIsPinned = async (noteData) => {
-    const noteId = noteData._id;
-
+  const updateIsPinned = async (noteId) => {
     try {
       const res = await axios.put(
         `${API_BASE_URL}/note/update-note-pinned/` + noteId,
-        { isPinned: !noteData.isPinned },
-        { withCredentials: true }
+        {},
+        {
+          withCredentials: true,
+        }
       );
 
-      if (res.data.success === false) {
-        toast.error(res.data.message);
-        console.log(res.data.message);
-        return;
+      if (res.data && res.data.note) {
+        toast.success(res.data.message);
+        getallNotes();
       }
-
-      toast.success(res.data.message);
-      getAllNotes();
     } catch (error) {
-      console.log(error.message);
+      console.log(error);
     }
   };
 
-  // Separate pinned and unpinned notes
-  const pinnedNotes = allNotes.filter((note) => note.isPinned);
-  const unpinnedNotes = allNotes.filter((note) => !note.isPinned);
+  useEffect(() => {
+    if (!currentUser) {
+      navigate("/login");
+    }
+    getallNotes();
+  }, [currentUser]);
 
   return (
-    <div className="min-h-screen gradient-bg">
+    <>
       <Navbar
-        userInfo={userInfo}
         onSearchNote={onSearchNote}
         handleClearSearch={handleClearSearch}
       />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Loading State */}
-        {isLoading ? (
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="loading-dots">
-              <div></div>
-              <div></div>
-              <div></div>
-            </div>
-          </div>
-        ) : allNotes.length > 0 ? (
-          <div className="space-y-8">
-            {/* Pinned Notes Section */}
-            {pinnedNotes.length > 0 && (
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                  <span className="w-1 h-6 bg-primary-500 rounded-full mr-3"></span>
-                  Pinned Notes
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {pinnedNotes.map((note) => (
-                    <NoteCard
-                      key={note._id}
-                      title={note.title}
-                      date={note.createdAt}
-                      content={note.content}
-                      tags={note.tags}
-                      isPinned={note.isPinned}
-                      onEdit={() => handleEdit(note)}
-                      onDelete={() => deleteNote(note)}
-                      onPinNote={() => updateIsPinned(note)}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* All Notes Section */}
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                <span className="w-1 h-6 bg-gray-400 dark:bg-primary-700 rounded-full mr-3"></span>
-                {isSearch ? "Search Results" : "All Notes"}
-                {!isSearch && (
-                  <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
-                    ({allNotes.length})
-                  </span>
-                )}
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {unpinnedNotes.map((note) => (
-                  <NoteCard
-                    key={note._id}
-                    title={note.title}
-                    date={note.createdAt}
-                    content={note.content}
-                    tags={note.tags}
-                    isPinned={note.isPinned}
-                    onEdit={() => handleEdit(note)}
-                    onDelete={() => deleteNote(note)}
-                    onPinNote={() => updateIsPinned(note)}
-                  />
-                ))}
-              </div>
-            </div>
+      <div className="container mx-auto">
+        {allNotes.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-8">
+            {allNotes.map((item, index) => (
+              <NoteCard
+                key={item._id}
+                title={item.title}
+                date={item.createdAt}
+                content={item.content}
+                tags={item.tags}
+                isPinned={item.isPinned}
+                onEdit={() => handleEdit(item)}
+                onDelete={() => deleteNote(item._id)}
+                onPinNote={() => updateIsPinned(item._id)}
+              />
+            ))}
           </div>
         ) : (
-          <EmptyCard
-            message={
-              isSearch
-                ? "No notes match your search. Try a different keyword."
-                : "You have no notes yet. Start by creating your first note!"
-            }
-            isSearch={isSearch}
-          />
+          <EmptyCard isSearch={isSearch} />
         )}
       </div>
 
-      {/* Floating Add Button */}
       <button
-        className="fixed bottom-8 right-8 z-40 bg-primary-600 hover:bg-primary-700 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-200"
-        onClick={() =>
-          setOpenAddEditModal({ isShown: true, type: "add", data: null })
-        }
-        title="Add Note"
+        className="w-16 h-16 flex items-center justify-center rounded-2xl bg-primary hover:bg-blue-600 absolute right-10 bottom-10"
+        onClick={() => {
+          setOpenAddEditModal({ isShown: true, type: "add", data: null });
+        }}
       >
-        <FiPlus className="w-8 h-8" />
+        <MdAdd className="text-[32px] text-white" />
       </button>
 
-      {/* Add/Edit Note Modal */}
       <Modal
         isOpen={openAddEditModal.isShown}
-        onRequestClose={() =>
-          setOpenAddEditModal({ isShown: false, type: "add", data: null })
-        }
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 dark:bg-black/60"
-        overlayClassName="fixed inset-0 z-40"
-        ariaHideApp={false}
+        onRequestClose={() => {}}
+        style={{
+          overlay: {
+            backgroundColor: "rgba(0,0,0,0.2)",
+          },
+        }}
+        contentLabel=""
+        className="w-[90%] sm:w-[60%] max-h-3/4 bg-white rounded-md mx-auto mt-14 p-5 "
       >
-        <div className="flex items-center justify-center w-full h-full pt-20 sm:pt-24">
-          <AddEditNotes
-            onClose={() =>
-              setOpenAddEditModal({ isShown: false, type: "add", data: null })
-            }
-            noteData={openAddEditModal.data}
-            type={openAddEditModal.type}
-            getAllNotes={getAllNotes}
-          />
-        </div>
+        <AddEditNotes
+          type={openAddEditModal.type}
+          noteData={openAddEditModal.data}
+          onClose={() => {
+            setOpenAddEditModal({ isShown: false, type: "add", data: null });
+          }}
+          getallNotes={getallNotes}
+        />
       </Modal>
-    </div>
+      <ToastContainer />
+    </>
   );
 };
 

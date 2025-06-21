@@ -58,6 +58,7 @@ const Login = () => {
 
       toast.success(res.data.message);
       dispatch(signInSuccess(res.data));
+      localStorage.setItem("token", res.data.accessToken);
       navigate("/");
     } catch (error) {
       toast.error(error.response?.data?.message || error.message);
