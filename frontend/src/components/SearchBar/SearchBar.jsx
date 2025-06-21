@@ -14,7 +14,7 @@ const SearchBar = ({ value, onChange, handleSearch, onClearSearch }) => {
         <input
           type="text"
           placeholder="Search notes..."
-          className="w-full bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-600 rounded-lg pl-10 pr-10 py-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+          className="w-full bg-white dark:bg-dark-800 border border-gray-200 dark:border-dark-600 rounded-lg pl-10 pr-24 py-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
           value={value}
           onChange={onChange}
           onKeyPress={handleKeyPress}
@@ -37,7 +37,7 @@ const SearchBar = ({ value, onChange, handleSearch, onClearSearch }) => {
       {value && (
         <button
           onClick={handleSearch}
-          className="mt-2 w-full bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium py-2 px-4 rounded-lg transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
+          className="absolute inset-y-0 right-10 flex items-center text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 transition-colors duration-200"
         >
           Search
         </button>
