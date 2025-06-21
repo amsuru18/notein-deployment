@@ -9,7 +9,7 @@ const SearchBar = ({ value, onChange, handleSearch, onClearSearch }) => {
   };
 
   return (
-    <div className="relative w-full">
+    <div className="absolute top-1/2 -translate-y-1/2 w-full">
       <div className="relative">
         <input
           type="text"

@@ -4,9 +4,9 @@ import { useNavigate } from "react-router-dom";
 import SearchBar from "./SearchBar/SearchBar";
 import { useSelector, useDispatch } from "react-redux";
 import {
-  signOutUserStart,
-  signOutUserFailure,
-  signOutUserSuccess,
+  signoutFailure,
+  signoutStart,
+  signoutSuccess,
 } from "../redux/user/userSlice";
 import axios from "axios";
 
@@ -19,19 +19,19 @@ const Navbar = ({ onSearchNote, handleClearSearch }) => {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   const handleSignout = async () => {
-    dispatch(signOutUserStart());
+    dispatch(signoutStart());
     try {
       const res = await axios.get(`${API_BASE_URL}/auth/signout`, {
         withCredentials: true,
       });
       if (res.data.success === false) {
-        dispatch(signOutUserFailure(res.data.message));
+        dispatch(signoutFailure(res.data.message));
         return;
       }
-      dispatch(signOutUserSuccess());
+      dispatch(signoutSuccess());
       navigate("/login");
     } catch (error) {
-      dispatch(signOutUserFailure(error.message));
+      dispatch(signoutFailure(error.message));
     }
   };
 
@@ -51,12 +51,15 @@ const Navbar = ({ onSearchNote, handleClearSearch }) => {
       <h2 className="text-xl font-medium text-black py-2">NoteIn</h2>
       {currentUser && (
         <>
-          <SearchBar
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            handleSearch={handleSearch}
-            onClearSearch={onClearSearch}
-          />
+          <div className="w-80 h-16 relative">
+            {" "}
+            <SearchBar
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              handleSearch={handleSearch}
+              onClearSearch={onClearSearch}
+            />
+          </div>
 
           <ProfileInfo onLogout={handleSignout} />
         </>
